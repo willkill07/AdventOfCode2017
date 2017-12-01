@@ -4,7 +4,4 @@ template <>
 void
 solve<Day01>(bool part2, std::istream& is, std::ostream& os)
 {
-  if (part2) {
-    os << '\n';
-  }
 }
