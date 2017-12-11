@@ -997,4 +997,4 @@ vkg inc 330 if by == 3786
 f inc -243 if u != -6271
 gyc dec 751 if ns != -1574
 nno dec -285 if ga <= -2006
-vkg inc -257 if v >= -1921	
+vkg inc -257 if v >= -1921
