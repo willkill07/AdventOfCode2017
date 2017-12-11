@@ -12,7 +12,7 @@ DESCR = 'descriptions/Day{:02}.md'
 INPUT_URL = 'http://adventofcode.com/2017/day/{}/input'
 INPUT = 'inputs/Day{:02}.txt'
 
-session = dict(session='YOUR KEY HERE')
+session = dict(session='53616c7465645f5f5a6732379ded1cf9f1d404e4a852cc7b118eab3d3393816270032eee75cba85a601c0ccf225f2a2d')
 
 def downloadDesc(day):
   r = requests.get(DESCR_URL.format(day), cookies=session)
