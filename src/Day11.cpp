@@ -1,39 +1,28 @@
 #include "Solution.hpp"
-#include <algorithm>
-#include <iterator>
-#include <string>
-
-constexpr int operator"" _enc(char const* c, unsigned long l) {
-  int r{0};
-  while (l--) r ^= *c++;
-  return r;
-}
-
-constexpr int next(char const*& c) {
-  int r{0};
-  while (*c == ',') ++c;
-  while (*c != '\0' && *c != ',') r ^= *c++;
-  return r;
-}
+#include <cctype>
+#include <cmath>
+#include <utility>
 
 template <>
 void
 solve<Day11>(bool part2, std::istream& is, std::ostream& os) {
-  std::string line{std::istream_iterator<char>{is}, {}};
-  int max{0}, x{0}, y{0}, z{0};
-  auto dist = [&] {
-    return (std::abs(x) + std::abs(y) + std::abs(z)) / 2;
-  };
-  for (auto c = line.c_str(); *c; ) {
-    switch (next(c)) {
-      case "n"_enc:       ++y, --z; break;
-      case "ne"_enc: ++x,      --z; break;
-      case "se"_enc: ++x, --y;      break;
-      case "s"_enc:       --y, ++z; break;
-      case "sw"_enc: --x,      ++z; break;
-      case "nw"_enc: --x, ++y;      break;
+  int x{0}, y{0}, z{0}, dist{0}, max{0};
+  for (char c, v{0}; is >> c; ) {
+    if (std::isalpha(c)) {
+      v ^= c;
+      continue;
     }
-    max = std::max(max, dist());
+    switch(std::exchange(v, 0)) {
+      case 'n'      :      ++y, --z; break;
+      case 'n' ^ 'e': ++x,      --z; break;
+      case 's' ^ 'e': ++x, --y     ; break;
+      case 's'      :      --y, ++z; break;
+      case 's' ^ 'w': --x,      ++z; break;
+      case 'n' ^ 'w': --x, ++y     ; break;
+    }
+    dist = (std::abs(x) + std::abs(y) + std::abs(z)) / 2;
+    if (part2)
+      max = std::max(max, dist);
   }
-  os << (part2 ? max : dist()) << '\n';
+  os << (part2 ? max : dist) << '\n';
 }
