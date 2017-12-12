@@ -4,11 +4,60 @@
 #include <algorithm>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 namespace util {
 
-template <int N = -1, typename Fn, typename... Args>
+template <typename T>
+struct disjoint_set {
+  struct set {
+    T id;
+    int size;
+  };
+
+  T find(T t) {
+    return find_impl(t).id;
+  }
+
+  void join(T t1, T t2) {
+    auto & p1 = find_impl(t1);
+    auto & p2 = find_impl(t2);
+    if (&p1 == &p2)
+      return;
+    --distinct;
+    p1.id = p2.id;
+    p2.size += p1.size;
+  }
+
+  int size_of(T t) {
+    return find_impl(t).size;
+  }
+
+  int sets() const {
+    return distinct;
+  }
+
+private:
+
+  set& find_impl (T t) {
+    set& s = table[t];
+    if (s.size == 0) {
+      ++distinct;
+      return s = {t, 1};
+    }
+    if (s.id == t)
+      return s;
+    set& s1 = find_impl(s.id);
+    s.id = s1.id;
+    return s1;
+  }
+
+  std::unordered_map<T,set> table;
+  int distinct {0};
+};
+
+  template <int N = -1, typename Fn, typename... Args>
 void
 parallel_do(Fn&& f, Args&&... args)
 {
