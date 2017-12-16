@@ -9,7 +9,13 @@
 
 namespace util {
 
-template <typename T>
+std::string
+knot_hash(std::string const & str);
+
+std::array<bool, 128>
+hash2array(std::string const & hash);
+
+template <typename T, typename HashFn = std::hash<T>>
 struct disjoint_set {
   struct set {
     T id;
@@ -34,6 +40,10 @@ struct disjoint_set {
     return find_impl(t).size;
   }
 
+  int size() const {
+    return total_size;
+  }
+
   int sets() const {
     return distinct;
   }
@@ -44,6 +54,7 @@ private:
     set& s = table[t];
     if (s.size == 0) {
       ++distinct;
+      ++total_size;
       return s = {t, 1};
     }
     if (s.id == t)
@@ -53,11 +64,12 @@ private:
     return s1;
   }
 
-  std::unordered_map<T,set> table;
+  std::unordered_map<T,set, HashFn> table;
   int distinct {0};
+  int total_size {0};
 };
 
-  template <int N = -1, typename Fn, typename... Args>
+template <int N = -1, typename Fn, typename... Args>
 void
 parallel_do(Fn&& f, Args&&... args)
 {

@@ -1,6 +1,52 @@
+#include <vector>
+#include <array>
+#include <numeric>
+#include <algorithm>
+#include <sstream>
+#include <string>
+#include <functional>
+#include <iomanip>
+
 #include "util.hpp"
 
 namespace util {
+
+std::string
+knot_hash(std::string const & str) {
+  std::array<unsigned char, 256> list;
+  std::iota(std::begin(list), std::end(list), 0);
+  std::vector<unsigned char> lengths {std::begin(str), std::end(str)};
+  lengths.insert(lengths.end(), {17, 31, 73, 47, 23});
+  unsigned char skip{0}, pos {0};
+  for (int _{0}; _ < 64; ++_)
+    for (unsigned char length : lengths) {
+      std::reverse(std::begin(list), std::begin(list) + length);
+      unsigned char delta = length + skip++;
+      std::rotate(std::begin(list), std::begin(list) + delta, std::end(list));
+      pos += delta;
+    }
+  std::rotate(std::begin(list), std::end(list) - pos, std::end(list));
+  std::ostringstream oss;
+  oss.flags(std::ios::hex);
+  oss.fill('0');
+  for (auto b = std::begin(list); b != std::end(list); std::advance(b, 16))
+    oss << std::setw(2) << std::accumulate(b, std::next(b, 16), 0, std::bit_xor<void>());
+  return oss.str();
+}
+
+std::array<bool, 128>
+hash2array(std::string const & hash) {
+  std::array<bool, 128> arr;
+  auto a = std::begin(arr);
+  for (auto h : hash) {
+    unsigned char const d = htoi(h);
+    *a++ = (d >> 3) & 1;
+    *a++ = (d >> 2) & 1;
+    *a++ = (d >> 1) & 1;
+    *a++ = d & 1;
+  }
+  return arr;
+}
 
 int
 htoi(char c)
