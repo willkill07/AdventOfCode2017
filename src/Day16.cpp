@@ -1,9 +1,9 @@
 #include "Solution.hpp"
-#include <numeric>
 #include <algorithm>
-#include <regex>
 #include <functional>
 #include <map>
+#include <numeric>
+#include <regex>
 
 static std::regex const SPIN {R"(s(\d+))", std::regex::optimize},
                         EXCH {R"(x(\d+)/(\d+))", std::regex::optimize},

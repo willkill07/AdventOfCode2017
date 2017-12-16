@@ -6,8 +6,16 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <type_traits>
 
 namespace util {
+
+template <unsigned int I, typename TupleLike>
+struct View {
+  std::tuple_element_t<I, TupleLike> val;
+  View(TupleLike v) : val(std::get<I>(v)) {};
+  bool operator<(const View &o) const { return val < o.val; }
+};
 
 std::string
 knot_hash(std::string const & str);

@@ -1,14 +1,15 @@
 #include "Solution.hpp"
-#include <array>
-#include <numeric>
-#include <sstream>
-#include <iomanip>
-#include <vector>
-#include <cctype>
 #include "util.hpp"
+#include <algorithm>
+#include <array>
+#include <sstream>
+#include <string>
+
+using Pair = std::pair<int,int>;
 
 struct PairHash {
-  std::size_t operator()(std::pair<int,int> const& p) const {
+  std::size_t
+  operator()(Pair const& p) const {
     return *reinterpret_cast<std::size_t const*>(&p.first);
   }
 };
@@ -19,7 +20,7 @@ solve<Day14>(bool part2, std::istream& is, std::ostream& os)
 {
   std::string input;
   is >> input;
-  util::disjoint_set<std::pair<int,int>, PairHash> set;
+  util::disjoint_set<Pair, PairHash> set;
   std::array<bool, 128> prev;
   std::fill(std::begin(prev), std::end(prev), false);
   for (int row = 0; row < 128; ++row) {
@@ -34,7 +35,7 @@ solve<Day14>(bool part2, std::istream& is, std::ostream& os)
           set.join({row, col}, {row, col - 1});
       }
     }
-    std::copy(std::begin(hash), std::end(hash), std::begin(prev));
+    prev = hash;
   }
   os << (part2 ? set.sets() : set.size()) << '\n';
 }
