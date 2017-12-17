@@ -1,10 +1,11 @@
-#include "Preprocessor.hpp"
 #include "Solution.hpp"
 #include "timer.hpp"
 #include <array>
+#include <fstream>
 #include <getopt.h>
 #include <iomanip>
 #include <regex>
+#include <sstream>
 
 enum time_options_t { NO_TIME = 0, TIME_IND = 1, TIME_TOTAL = 2 };
 
@@ -19,10 +20,13 @@ double
 timeSolve(bool, bool);
 
 double
-run(Day, bool, time_options_t, std::ostream&);
+run(int, bool, time_options_t, std::ostream&);
 
 options_t
 parseArgs(int, char* []);
+
+std::string
+asString(int);
 
 int
 main(int argc, char* argv[])
@@ -31,8 +35,7 @@ main(int argc, char* argv[])
   options_t     options = parseArgs(argc, argv);
   double        totalTime{0.0};
   std::ostream  os{options.time == TIME_TOTAL ? DEVNULL.rdbuf() : std::cout.rdbuf()};
-  for (int d{Day01}; d != TOTAL_DAYS; ++d) {
-    Day day{static_cast<Day>(d)};
+  for (int day{1}; day <= 25; ++day) {
     if (!std::regex_search(asString(day), options.filter))
       continue;
     os << asString(day) << ((options.part1 && options.part2) ? "\n" : ": ");
@@ -52,6 +55,12 @@ main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
+std::string
+asString(int day)
+{
+  return (std::ostringstream{} << "Day" << std::setfill('0') << std::setw(2) << day).str();
+}
+
 template <Day DAY>
 double
 timeSolve(bool part2, bool time, std::ostream& os)
@@ -59,9 +68,9 @@ timeSolve(bool part2, bool time, std::ostream& os)
   double        resTime{0.0};
   std::ifstream is{"./inputs/" + asString(DAY) + ".txt"};
   if (time) {
-    Timer t;
+    Timer<> t;
     solve<DAY>(part2, is, os);
-    resTime = t.current();
+    resTime = t.current<std::milli>();
     os.precision(5);
     os << "  time: ";
     os.setf(std::ios::fixed, std::ios::floatfield);
@@ -71,24 +80,24 @@ timeSolve(bool part2, bool time, std::ostream& os)
   return resTime;
 }
 
-#define RUN_DAY(X) \
-  case Day##X:     \
-    return timeSolve<Day##X>(part2, time, os);
 double
-run(Day day, bool part2, time_options_t time, std::ostream& os)
+run(int day, bool part2, time_options_t time, std::ostream& os)
 {
-  switch (day) {
-    EVAL(MAP(RUN_DAY, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25))
-    default:
-      return 0.0;
-  }
+  using FnType = double(*)(bool, bool, std::ostream&);
+  static std::array<FnType, 26> const dispatch {{ nullptr,
+      &timeSolve<Day01>, &timeSolve<Day02>, &timeSolve<Day03>, &timeSolve<Day04>, &timeSolve<Day05>,
+      &timeSolve<Day06>, &timeSolve<Day07>, &timeSolve<Day08>, &timeSolve<Day09>, &timeSolve<Day10>,
+      &timeSolve<Day11>, &timeSolve<Day12>, &timeSolve<Day13>, &timeSolve<Day14>, &timeSolve<Day15>,
+      &timeSolve<Day16>, &timeSolve<Day17>, &timeSolve<Day18>, &timeSolve<Day19>, &timeSolve<Day20>,
+      &timeSolve<Day21>, &timeSolve<Day22>, &timeSolve<Day23>, &timeSolve<Day24>, &timeSolve<Day25>
+  }};
+  return dispatch[day](part2, time, os);
 }
-#undef RUN_DAY
 
 options_t
 parseArgs(int argc, char* argv[])
 {
-  options_t                options;
+  options_t options;
   static char const* const shortOpts{"htnp:f:"};
   static const std::array<const ::option, 6> longOpts{{{"help", no_argument, nullptr, 'h'},
                                                        {"part", required_argument, nullptr, 'p'},
@@ -105,13 +114,12 @@ parseArgs(int argc, char* argv[])
           options.part1 = false;
         break;
       case 'f':
-        options.filter = std::regex{optarg};
+        options.filter = std::regex{optarg, std::regex::optimize};
         break;
       case 't': {
         std::string arg{optarg};
         const static std::vector<std::string> timeOptStrings{"no", "yes", "total"};
-        long index{std::distance(timeOptStrings.begin(), std::find(timeOptStrings.begin(), timeOptStrings.end(), arg))};
-        if (index != 3) {
+        if (long index{std::distance(timeOptStrings.begin(), std::find(timeOptStrings.begin(), timeOptStrings.end(), arg))}; index != 3) {
           options.time = static_cast<time_options_t>(index);
           break;
         }
@@ -119,7 +127,7 @@ parseArgs(int argc, char* argv[])
       }
       case 'h':
       case '?':
-        printf("Advent of Code - 2015\n"
+        printf("Advent of Code - 2017\n"
                "---------------------\n"
                " -h|--help )\n    print help\n"
                " -p|--part=[1,2,all] )\n    only run parts specified [default = all]\n"

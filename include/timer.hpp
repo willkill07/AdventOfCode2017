@@ -2,10 +2,9 @@
 #define _TIMER_HPP_
 
 #include <chrono>
-#include <iostream>
 
+template <typename Timing = std::chrono::steady_clock>
 struct Timer {
-  using Timing = std::chrono::high_resolution_clock;
   using Point = std::chrono::time_point<Timing>;
 
   Point begin;
@@ -15,16 +14,14 @@ struct Timer {
   {
   }
 
+  template <typename Ratio>
   double
   current()
   {
     Point end{Timing::now()};
-    return std::chrono::duration<double, std::milli>{end - begin}.count();
+    return std::chrono::duration<double, Ratio>{end - begin}.count();
   }
 
-  ~Timer()
-  {
-  }
 };
 
 #endif

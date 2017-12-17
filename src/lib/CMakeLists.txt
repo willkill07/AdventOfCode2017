@@ -1,6 +1,5 @@
 add_library(AdventUtils
   io.cpp
-  Solution.cpp
   md5.cpp
   util.cpp)
 

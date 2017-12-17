@@ -1,12 +1,10 @@
 #ifndef _WILLIAM_KILLIAN_SOLUTION_HPP_
 #define _WILLIAM_KILLIAN_SOLUTION_HPP_
 
-#include <fstream>
 #include <iostream>
-#include <string>
 
 enum Day {
-  Day01,
+  Day01 = 1,
   Day02,
   Day03,
   Day04,
@@ -30,22 +28,11 @@ enum Day {
   Day22,
   Day23,
   Day24,
-  Day25,
-  TOTAL_DAYS
+  Day25
 };
-
-std::string
-asString(Day d);
 
 template <Day DAY>
 void
-solve(bool part2, std::istream& is, std::ostream& os)
-{
-  os << asString(DAY) << " part " << (part2 ? '2' : '1') << " is not implemented";
-  if (is.bad())
-    os << " and input file does not exist" << std::endl;
-  else
-    os << std::endl;
-};
+solve(bool, std::istream&, std::ostream&);
 
 #endif
