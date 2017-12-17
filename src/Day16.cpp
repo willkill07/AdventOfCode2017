@@ -24,8 +24,7 @@ solve<Day16>(bool part2, std::istream& is, std::ostream& os)
       });
     else if (char a, b; std::sscanf(line.c_str(), "p%c/%c", &a, &b))
       cmds.emplace_back([&p, a, b] {
-        std::iter_swap(std::find(std::begin(p), std::end(p), a),
-                       std::find(std::begin(p), std::end(p), b));
+        std::iter_swap(std::find(std::begin(p), std::end(p), a), std::find(std::begin(p), std::end(p), b));
       });
 
   auto dance = [&] {
@@ -41,7 +40,7 @@ solve<Day16>(bool part2, std::istream& is, std::ostream& os)
     for (auto const & [s,i] : lookup) {
       if (i == rem) {
         os << s << '\n';
-        break;
+        return;
       }
     }
   } else {
