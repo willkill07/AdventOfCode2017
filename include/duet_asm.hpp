@@ -18,11 +18,9 @@ struct program {
     arg         arg1, arg2;
   };
 
-  program(std::vector<instr> const& lst, long val = -1)
+  program(std::vector<instr> const& lst, long val = 0)
   : lst(lst) {
-    if (val >= 0) {
-      reg['p'] = val;
-    }
+    reg['p' - 'a'] = val;
   }
 
   void run(program& p) {
@@ -41,44 +39,36 @@ struct program {
     return sends;
   }
 
-  int recv_count() const {
-    return recvs;
-  }
-
-  std::pair<bool, std::optional<long>>
-  apply(program* other = nullptr) {
+  std::pair<bool, std::optional<long>> apply(program* other = nullptr) {
+    int next{1};
     std::optional<long> ret;
-    if (ip >= lst.size()) {
+    if (ip >= lst.size())
       return {true, ret};
+    auto const & [cmd, a1, a2] = lst[ip];
+    switch (util::hash(cmd)) {
+      case "set"_hash: at(a1)  = value_of(a2); break;
+      case "add"_hash: at(a1) += value_of(a2); break;
+      case "mul"_hash: at(a1) *= value_of(a2); break;
+      case "mod"_hash: at(a1) %= value_of(a2); break;
+      case "snd"_hash:
+        ++sends;
+        if (other)
+          other->buf.enqueue(value_of(a1));
+        else
+          last = value_of(a1);
+        break;
+      case "rcv"_hash:
+        if (other)
+          at(a1) = buf.dequeue();
+        else if (value_of(a1) != 0)
+          ret = last;
+        break;
+      case "jgz"_hash:
+        if (value_of(a1) > 0)
+          next = value_of(a2);
     }
-    auto & [cmd, a1, a2] = lst[ip];
-    if (cmd == "snd") {
-      if (other) {
-        other->buf.enqueue(value_of(a1));
-      } else {
-        last = value_of(a1);
-      }
-      ++sends;
-    } else if (cmd == "rcv") {
-      if (other) {
-        at(a1) = buf.dequeue();
-      } else if (value_of(a1) != 0) {
-        ret = last;
-      }
-      ++recvs;
-    } else if (cmd == "set") {
-      at(a1) = value_of(a2);
-    } else if (cmd == "add") {
-      at(a1) += value_of(a2);
-    } else if (cmd == "mul") {
-      at(a1) *= value_of(a2);
-    } else if (cmd == "mod") {
-      at(a1) %= value_of(a2);
-    } else if (cmd == "jgz") {
-      ip += ((value_of(a1) > 0) ? value_of(a2) - 1 : 0);
-    }
-    ++ip;
-    return {false, ret};
+    ip += next;
+    return {ip >= lst.size(), ret};
   }
 
   private:
@@ -88,27 +78,25 @@ struct program {
   }
 
   long value_of(instr::arg const& a) const {
-    return (std::holds_alternative<long>(a)) ? std::get<long>(a) : reg[std::get<char>(a) - 'a'];
+    if (std::holds_alternative<long>(a))
+      return std::get<long>(a);
+    return reg[std::get<char>(a) - 'a'];
   }
 
   std::vector<instr> const& lst;
-  std::array<long, 26>      reg{{0}};
-  util::safe_queue<long>    buf;
-  std::optional<long>       last;
-  unsigned int              ip{0}, sends{0}, recvs{0};
+  std::array<long, 26> reg{{0}};
+  util::safe_queue<long> buf;
+  std::optional<long> last;
+  unsigned int ip{0}, sends{0};
 };
 
 std::istream& operator>>(std::istream& is, program::instr::arg& v) {
   if (is.peek() == ' ')
     is.ignore(1);
-  if (std::isalpha(is.peek())) {
-    char c;
-    is >> c;
-    v = c;
-  } else if (std::isdigit(is.peek()) || is.peek() == '-') {
-    long val;
-    is >> val;
-    v = val;
+  if (char c; std::isalpha(is.peek())) {
+    is >> c; v = c;
+  } else if (long val; std::isdigit(is.peek()) || is.peek() == '-') {
+    is >> val; v = val;
   }
   return is;
 }
