@@ -2,4 +2,4 @@
 mkdir -p build
 cd build
 cmake .. -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++
-make install
+make -j install

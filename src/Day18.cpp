@@ -1,34 +1,27 @@
 #include "Solution.hpp"
-#include <algorithm>
-#include <array>
+#include "duet_asm.hpp"
 #include <iterator>
-#include <sstream>
 #include <thread>
 #include <vector>
-
-#include "duet_asm.hpp"
 
 template <>
 void
 solve<Day18>(bool part2, std::istream& is, std::ostream& os)
 {
   std::vector<program::instr> inst{std::istream_iterator<program::instr>{is}, {}};
-  if (part2) {
-    program     p0{inst}, p1{inst, 1};
-    std::thread t0{[&] { p0.run(p1); }};
-    std::thread t1{[&] { p1.run(p0); }};
-    t0.detach();
-    t1.detach();
-
-    while (!p0.deadlock() || !p1.deadlock())
-      ;
-    os << p1.send_count() << '\n';
-  } else {
-    program p{inst};
-    while (true)
-      if (auto [done, ret] = p.apply(); ret) {
-        os << *ret << '\n';
-        break;
+  os << [part2, p0 = program{inst}, p1 = program{inst, 1}] () mutable {
+    if (part2) {
+      std::thread{&program::run, &p0, &p1}.detach();
+      std::thread{&program::run, &p1, &p0}.detach();
+      while (!p0.deadlock() || !p1.deadlock())
+        ;
+      return p1.send_count();
+    } else {
+      while (true) {
+        auto [fin, val] = p0.apply();
+        if (val)
+          return static_cast<int>(val.value());
       }
-  }
+    }
+  }() << '\n';
 }

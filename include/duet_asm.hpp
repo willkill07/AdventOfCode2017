@@ -23,11 +23,11 @@ struct program {
     reg['p' - 'a'] = val;
   }
 
-  void run(program& p) {
+  void run(program* p) {
     while (true) {
-      auto[done, _] = apply(&p);
+      auto[done, _] = apply(p);
       if (done)
-        break;
+        return;
     }
   }
 
