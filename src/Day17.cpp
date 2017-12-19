@@ -10,9 +10,12 @@ solve<Day17>(bool part2, std::istream& is, std::ostream& os)
   is >> incr;
   if (part2) {
     int afterZero{0}, i{0};
-    for (int n{1}; n <= 50'000'000; ++n)
-      if ((i = (i + incr) % n + 1) == 1)
+    for (int n(1); n <= 50'000'000; ++n) {
+      while (i + incr + 1 < n)
+        i += incr + 1, ++n;
+      if (i = (i + incr) % n, i++ == 0)
         afterZero = n;
+    }
     os << afterZero << '\n';
   } else {
     std::vector<int> buf{0};

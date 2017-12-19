@@ -39,7 +39,7 @@ hash2array(std::string const & hash) {
   std::array<bool, 128> arr;
   auto a = std::begin(arr);
   for (auto h : hash) {
-    unsigned char const d = htoi(h);
+    auto const d = static_cast<unsigned char>(htoi(h));
     *a++ = (d >> 3) & 1;
     *a++ = (d >> 2) & 1;
     *a++ = (d >> 1) & 1;
@@ -71,7 +71,7 @@ fast_itoa(int i, char* b)
     ++p;
   while (shifter /= 10);
   *p = '\0';
-  int dist(p - b);
+  auto dist = static_cast<int>(p - b);
   do
     *--p = digit[i % 10];
   while (i /= 10);

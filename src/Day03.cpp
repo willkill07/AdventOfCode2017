@@ -51,7 +51,7 @@ solve<Day03>(bool part2, std::istream& is, std::ostream& os) {
     if (num == 1) {
       os << 0 << '\n';
     } else {
-      int revs(std::ceil(std::sqrt(num)) / 2);
+      auto revs = static_cast<int>(std::ceil(std::sqrt(num)) / 2);
       int offset{(num - (revs * 2 - 1) * (revs * 2 - 1)) % (revs * 2)};
       os << (revs + std::abs(offset - revs)) << '\n';
     }

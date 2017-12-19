@@ -30,10 +30,10 @@ static void
 md5_compress(md5sum_t &state, unsigned long nblocks, const void *in)
 {
   uint32_t i, W[16], a, b, c, d;
-  const auto *buf = static_cast<const unsigned char *>(in);
+  const auto *buf = static_cast<unsigned char const *>(in);
   while (nblocks--) {
     for (i = 0; i < 16; i++)
-      W[i] = ((uint32_t *)buf)[i];
+      W[i] = reinterpret_cast<uint32_t const *>(buf)[i];
     a = state.a32[0];
     b = state.a32[1];
     c = state.a32[2];
@@ -119,7 +119,7 @@ md5str(uint8_t *message, size_t len, md5str_t* digest)
   const static v32qi ZERO = {'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'},
     X27 = {0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27,0x27},
     NINE = {9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9};
-  digest->h = (v16hi) _mm256_cvtepu8_epi16(md5(message, len).m128i);
+  digest->h = static_cast<v16hi>(_mm256_cvtepu8_epi16(md5(message, len).m128i));
   digest->h = (digest->h >> FOUR) | ((digest->h << EIGHT) & MASK);
   digest->q += ZERO + (X27 & (digest->q > NINE));
 }
@@ -135,7 +135,7 @@ md5(uint8_t *message, size_t len)
   md5_compress(hash, len / 64, message);
   uint32_t blockbuff[16];
   auto *byteptr = reinterpret_cast<uint8_t *>(blockbuff);
-  int      left = len % 64;
+  size_t      left = len % 64;
   memcpy(byteptr, message + len - left, left);
   byteptr[left] = 0x80;
   left++;
@@ -146,8 +146,8 @@ md5(uint8_t *message, size_t len)
     md5_compress(hash, 1, blockbuff);
     memset(blockbuff, 0, 56);
   }
-  blockbuff[14] = (uint32_t)(len << 3);
-  blockbuff[15] = (uint32_t)(len >> 29);
+  blockbuff[14] = static_cast<uint32_t>(len << 3);
+  blockbuff[15] = static_cast<uint32_t>(len >> 29);
   md5_compress(hash, 1, blockbuff);
   return hash;
 }

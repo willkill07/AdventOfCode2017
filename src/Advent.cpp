@@ -7,6 +7,32 @@
 #include <regex>
 #include <sstream>
 
+template<> void solve<Day01>(bool, std::istream&, std::ostream&);
+template<> void solve<Day02>(bool, std::istream&, std::ostream&);
+template<> void solve<Day03>(bool, std::istream&, std::ostream&);
+template<> void solve<Day04>(bool, std::istream&, std::ostream&);
+template<> void solve<Day05>(bool, std::istream&, std::ostream&);
+template<> void solve<Day06>(bool, std::istream&, std::ostream&);
+template<> void solve<Day07>(bool, std::istream&, std::ostream&);
+template<> void solve<Day08>(bool, std::istream&, std::ostream&);
+template<> void solve<Day09>(bool, std::istream&, std::ostream&);
+template<> void solve<Day10>(bool, std::istream&, std::ostream&);
+template<> void solve<Day11>(bool, std::istream&, std::ostream&);
+template<> void solve<Day12>(bool, std::istream&, std::ostream&);
+template<> void solve<Day13>(bool, std::istream&, std::ostream&);
+template<> void solve<Day14>(bool, std::istream&, std::ostream&);
+template<> void solve<Day15>(bool, std::istream&, std::ostream&);
+template<> void solve<Day16>(bool, std::istream&, std::ostream&);
+template<> void solve<Day17>(bool, std::istream&, std::ostream&);
+template<> void solve<Day18>(bool, std::istream&, std::ostream&);
+template<> void solve<Day19>(bool, std::istream&, std::ostream&);
+template<> void solve<Day20>(bool, std::istream&, std::ostream&);
+template<> void solve<Day21>(bool, std::istream&, std::ostream&);
+template<> void solve<Day22>(bool, std::istream&, std::ostream&);
+template<> void solve<Day23>(bool, std::istream&, std::ostream&);
+template<> void solve<Day24>(bool, std::istream&, std::ostream&);
+template<> void solve<Day25>(bool, std::istream&, std::ostream&);
+
 enum time_options_t { NO_TIME = 0, TIME_IND = 1, TIME_TOTAL = 2 };
 
 struct options_t {
@@ -91,7 +117,7 @@ run(int day, bool part2, time_options_t time, std::ostream& os)
       &timeSolve<Day16>, &timeSolve<Day17>, &timeSolve<Day18>, &timeSolve<Day19>, &timeSolve<Day20>,
       &timeSolve<Day21>, &timeSolve<Day22>, &timeSolve<Day23>, &timeSolve<Day24>, &timeSolve<Day25>
   }};
-  return dispatch[day](part2, time, os);
+  return dispatch[static_cast<unsigned int>(day)](part2, time, os);
 }
 
 options_t
@@ -118,13 +144,14 @@ parseArgs(int argc, char* argv[])
         break;
       case 't': {
         std::string arg{optarg};
-        const static std::vector<std::string> timeOptStrings{"no", "yes", "total"};
-        if (long index{std::distance(timeOptStrings.begin(), std::find(timeOptStrings.begin(), timeOptStrings.end(), arg))}; index != 3) {
+        static char const * const timeOptStrings[3] = {"no", "yes", "total"};
+        if (long index{std::distance(timeOptStrings, std::find(timeOptStrings, timeOptStrings + 3, arg))}; index != 3) {
           options.time = static_cast<time_options_t>(index);
           break;
         }
         printf("ERROR: invalid time specified\n");
       }
+        [[fallthrough]];
       case 'h':
       case '?':
         printf("Advent of Code - 2017\n"
@@ -136,7 +163,6 @@ parseArgs(int argc, char* argv[])
                "\n"
                " Implementation by William Killian (c) 2016\n");
         exit(EXIT_SUCCESS);
-        break;
     }
   }
   return options;

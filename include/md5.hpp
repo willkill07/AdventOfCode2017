@@ -1,5 +1,5 @@
-#ifndef _WILLIAM_KILLIAN_MD5_HPP_
-#define _WILLIAM_KILLIAN_MD5_HPP_
+#ifndef WILLIAM_KILLIAN_MD5_HPP_
+#define WILLIAM_KILLIAN_MD5_HPP_
 
 #include <cstddef>
 #include <cinttypes>
@@ -11,7 +11,7 @@ template <typename T, size_t N> using vector = T __attribute__((ext_vector_size(
 using uint128_t = unsigned __int128;
 
 constexpr uint8_t val(const char c) {
-  return (c >= 'A') ? c - 'A' + 10 : (c - '0');
+  return static_cast<uint8_t>((c >= 'A') ? (c - 'A') + 10 : (c - '0'));
 }
 
 constexpr uint128_t operator"" _uint128_t(const char *str, size_t width) {
@@ -62,9 +62,9 @@ union md5str_t {
   using iterator = value_type*;
   using const_iterator = const value_type*;
 
-  constexpr inline size_type size() const { return 32; };
-  constexpr inline iterator begin() { return &c[0]; };
-  constexpr inline iterator end() { return &c[size()]; };
+  constexpr inline size_type size() const { return 32; }
+  constexpr inline iterator begin() { return &c[0]; }
+  constexpr inline iterator end() { return &c[size()]; }
   constexpr inline const_iterator cbegin() const { return &c[0]; }
   constexpr inline const_iterator cend() const { return &c[size()]; }
 };

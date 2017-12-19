@@ -1,5 +1,5 @@
-#ifndef _TIMER_HPP_
-#define _TIMER_HPP_
+#ifndef WILLIAM_KILLIAN_TIMER_HPP_
+#define WILLIAM_KILLIAN_TIMER_HPP_
 
 #include <chrono>
 

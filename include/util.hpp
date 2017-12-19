@@ -1,5 +1,5 @@
-#ifndef _WILLIAM_KILLIAN_UTIL_HPP_
-#define _WILLIAM_KILLIAN_UTIL_HPP_
+#ifndef WILLIAM_KILLIAN_UTIL_HPP_
+#define WILLIAM_KILLIAN_UTIL_HPP_
 
 #include <algorithm>
 #include <string>
@@ -7,13 +7,44 @@
 #include <unordered_map>
 #include <vector>
 #include <type_traits>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
 namespace util {
+
+template <typename T>
+struct safe_queue {
+
+  template <typename U>
+  void enqueue (U && u) {
+    std::lock_guard lock{m};
+    q.push(std::forward<U>(u));
+    c.notify_one();
+  }
+
+  T dequeue () {
+    std::unique_lock lock{m};
+    c.wait(lock, [&] { return !q.empty(); });
+    T val = q.front();
+    q.pop();
+    return val;
+  }
+
+  bool empty() const {
+    return q.empty();
+  }
+
+private:
+  std::queue<T> q;
+  mutable std::mutex m;
+  std::condition_variable c;
+};
 
 template <unsigned int I, typename TupleLike>
 struct View {
   std::tuple_element_t<I, TupleLike> val;
-  View(TupleLike v) : val(std::get<I>(v)) {};
+  View(TupleLike v) : val(std::get<I>(v)) {}
   bool operator<(const View &o) const { return val < o.val; }
 };
 
@@ -126,9 +157,9 @@ std::vector<std::string>
 split(const std::string& text, const std::string& delims);
 
 constexpr uint64_t
-hash(const char* str, uint64_t ret = 0xCBF29CE484222325ull)
+hash(const char* str, uint64_t ret = 0x0ull)
 {
-  return (*str) ? ret : hash(str + 1, (ret ^ *(str + 1)) * 0x100000001B3ull);
+  return (*str) ? hash(str + 1, (ret << 8) | *(str + 1)) : ret;
 }
 
 constexpr uint64_t

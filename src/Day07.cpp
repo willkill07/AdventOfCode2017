@@ -32,40 +32,11 @@ It diff(It begin, It end) {
   return diff(begin, end, std::equal_to<void>{});
 }
 
-int calc_totals(Node* n) {
-  int total = n->weight;
-  for(Node* ch : n->cnodes) {
-    total += calc_totals(ch);
-  }
-  n->total = total;
-  return total;
-}
+int calc_totals(Node* n);
 
-Node* find_bad_node(Node* n) {
-  auto eq = [](Node* lhs, Node* rhs) {
-    return lhs->total == rhs->total;
-  };
-  if(auto odd = diff(std::begin(n->cnodes), std::end(n->cnodes), eq);
-     odd != std::end(n->cnodes))
-    return find_bad_node(*odd);
-  return n;
-}
+Node* find_bad_node(Node* n);
 
-std::unordered_map<std::string, Node>
-parse (std::istream& is) {
-  static std::regex re{"[^a-z0-9]+", std::regex::optimize | std::regex::extended};
-  std::unordered_map<std::string, Node> nodes;
-  for (std::string line; std::getline(is, line); ) {
-    line = std::regex_replace(line, re, " ");
-    std::istringstream iss{line};
-    std::string name;
-    int weight;
-    iss >> name >> weight;
-    std::vector<std::string> children{std::istream_iterator<std::string>{iss}, {}};
-    nodes[name] = Node{name, weight, 0, nullptr, children};
-  }
-  return nodes;
-}
+std::unordered_map<std::string, Node> parse (std::istream& is);
 
 template <>
 void
@@ -96,4 +67,40 @@ solve<Day07>(bool part2, std::istream& is, std::ostream& os)
   } else {
     os <<  tree->name << '\n';
   }
+}
+
+
+std::unordered_map<std::string, Node>
+parse (std::istream& is) {
+  static std::regex re{"[^a-z0-9]+", std::regex::optimize | std::regex::extended};
+  std::unordered_map<std::string, Node> nodes;
+  for (std::string line; std::getline(is, line); ) {
+    line = std::regex_replace(line, re, " ");
+    std::istringstream iss{line};
+    std::string name;
+    int weight;
+    iss >> name >> weight;
+    std::vector<std::string> children{std::istream_iterator<std::string>{iss}, {}};
+    nodes[name] = Node{name, weight, 0, nullptr, children, {}};
+  }
+  return nodes;
+}
+
+int calc_totals(Node* n) {
+  int total = n->weight;
+  for(Node* ch : n->cnodes) {
+    total += calc_totals(ch);
+  }
+  n->total = total;
+  return total;
+}
+
+Node* find_bad_node(Node* n) {
+  auto eq = [](Node* lhs, Node* rhs) {
+    return lhs->total == rhs->total;
+  };
+  if(auto odd = diff(std::begin(n->cnodes), std::end(n->cnodes), eq);
+     odd != std::end(n->cnodes))
+    return find_bad_node(*odd);
+  return n;
 }

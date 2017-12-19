@@ -1,5 +1,5 @@
-#ifndef _WILLIAM_KILLIAN_IO_HPP_
-#define _WILLIAM_KILLIAN_IO_HPP_
+#ifndef WILLIAM_KILLIAN_IO_HPP_
+#define WILLIAM_KILLIAN_IO_HPP_
 
 #include <iostream>
 #include <iterator>

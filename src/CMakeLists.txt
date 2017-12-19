@@ -32,5 +32,5 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 target_compile_options(Advent PUBLIC ${ADVENT_CXX_FLAGS})
-target_link_libraries(Advent AdventUtils Threads::Threads -lc++abi)
+target_link_libraries(Advent AdventUtils Threads::Threads ${ADVENT_LINK_FLAGS})
 install(TARGETS Advent RUNTIME DESTINATION ${PROJECT_SOURCE_DIR})
