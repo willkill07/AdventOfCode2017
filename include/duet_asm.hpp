@@ -39,7 +39,11 @@ struct program {
     return sends;
   }
 
-  std::pair<bool, std::optional<long>> apply(program* other = nullptr) {
+  inline program::instr const & curr() const {
+    return lst[ip];
+  }
+
+  inline std::pair<bool, std::optional<long>> apply(program* other = nullptr) {
     int next{1};
     std::optional<long> ret;
     if (ip >= lst.size())
@@ -48,8 +52,13 @@ struct program {
     switch (util::hash(cmd)) {
       case "set"_hash: at(a1)  = value_of(a2); break;
       case "add"_hash: at(a1) += value_of(a2); break;
+      case "sub"_hash: at(a1) -= value_of(a2); break;
       case "mul"_hash: at(a1) *= value_of(a2); break;
       case "mod"_hash: at(a1) %= value_of(a2); break;
+      case "sqrt"_hash:
+        at(a1) = std::ceil(std::sqrt(value_of(a2)));
+        //std::cerr << "g: " << at(a1) << ' ' << "d: " << value('d') << '\n';
+        break;
       case "snd"_hash:
         ++sends;
         if (other)
@@ -66,9 +75,34 @@ struct program {
       case "jgz"_hash:
         if (value_of(a1) > 0)
           next = value_of(a2);
+        break;
+      case "jlz"_hash:
+        if (value_of(a1) < 0)
+          next = value_of(a2);
+        break;
+      case "jnz"_hash:
+        if (value_of(a1) != 0)
+          next = value_of(a2);
+        break;
+      case "jge"_hash:
+        if (value_of(a1) <= 0)
+          next = value_of(a2);
+        break;
+      case "jle"_hash:
+        if (value_of(a1) <= 0)
+          next = value_of(a2);
+        break;
     }
     ip += next;
     return {ip >= lst.size(), ret};
+  }
+
+  inline long value(char r) const {
+    return reg[r - 'a'];
+  }
+
+  inline void set(char r, long v) {
+    reg[r - 'a'] = v;
   }
 
   private:
@@ -90,7 +124,7 @@ struct program {
   unsigned int ip{0}, sends{0};
 };
 
-std::istream& operator>>(std::istream& is, program::instr::arg& v) {
+inline std::istream& operator>>(std::istream& is, program::instr::arg& v) {
   if (is.peek() == ' ')
     is.ignore(1);
   if (char c; std::isalpha(is.peek())) {
@@ -101,11 +135,25 @@ std::istream& operator>>(std::istream& is, program::instr::arg& v) {
   return is;
 }
 
-std::istream& operator>>(std::istream& is, program::instr& i) {
+inline std::istream& operator>>(std::istream& is, program::instr& i) {
   if (is.peek() == '\n')
     is.ignore(1);
   is >> i.cmd >> i.arg1 >> i.arg2;
   return is;
 }
 
+inline std::ostream& operator<<(std::ostream& os, program::instr::arg const & a) {
+  if (std::holds_alternative<long>(a)) {
+    return os << std::get<long>(a);
+  } else if (std::holds_alternative<char>(a)) {
+    return os << std::get<char>(a);
+  } else {
+    return os;
+  }
+}
+
+inline std::ostream& operator<<(std::ostream& os, program::instr const & i) {
+  os << '[' << i.cmd << ' ' << i.arg1 << ' ' << i.arg2 << ']';
+  return os;
+}
 #endif
