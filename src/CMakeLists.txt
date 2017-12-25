@@ -28,9 +28,7 @@ add_executable(Advent
   Day24.cpp
   Day25.cpp)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
+target_compile_options(Advent PUBLIC ${CXX_TARGET_FLAGS})
+target_link_libraries(Advent PUBLIC AdventUtils)
 
-target_compile_options(Advent PUBLIC ${ADVENT_CXX_FLAGS})
-target_link_libraries(Advent AdventUtils Threads::Threads ${ADVENT_LINK_FLAGS})
 install(TARGETS Advent RUNTIME DESTINATION ${PROJECT_SOURCE_DIR})
