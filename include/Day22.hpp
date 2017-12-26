@@ -27,8 +27,9 @@ struct point {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day22>(bool part2, std::istream& is, std::ostream& os)
+Day<22>::solve(std::istream &is, std::ostream &os)
 {
   std::unordered_map<point, char, point::hash> cluster;
 

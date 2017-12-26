@@ -14,8 +14,9 @@ auto gen(int init, int mask) {
 }
 
 template <>
+template <bool part2>
 void
-solve<Day15>(bool part2, std::istream& is, std::ostream& os)
+Day<15>::solve(std::istream &is, std::ostream &os)
 {
   auto parse = [&is] {
     std::string line;

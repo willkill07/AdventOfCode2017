@@ -10,8 +10,9 @@ struct particle {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day20>(bool part2, std::istream& is, std::ostream& os)
+Day<20>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<particle> ps;
   for (std::string line; std::getline(is, line); ) {

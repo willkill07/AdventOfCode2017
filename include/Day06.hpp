@@ -4,8 +4,9 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day06>(bool part2, std::istream& is, std::ostream& os)
+Day<6>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<int> banks{std::istream_iterator<int>{is}, {}};
   std::map<std::vector<int>, int> unique;

@@ -1,37 +1,39 @@
-#include "Solution.hpp"
-#include "timer.hpp"
 #include <array>
 #include <fstream>
 #include <getopt.h>
 #include <iomanip>
+#include <optional>
 #include <regex>
 #include <sstream>
 
-template<> void solve<Day01>(bool, std::istream&, std::ostream&);
-template<> void solve<Day02>(bool, std::istream&, std::ostream&);
-template<> void solve<Day03>(bool, std::istream&, std::ostream&);
-template<> void solve<Day04>(bool, std::istream&, std::ostream&);
-template<> void solve<Day05>(bool, std::istream&, std::ostream&);
-template<> void solve<Day06>(bool, std::istream&, std::ostream&);
-template<> void solve<Day07>(bool, std::istream&, std::ostream&);
-template<> void solve<Day08>(bool, std::istream&, std::ostream&);
-template<> void solve<Day09>(bool, std::istream&, std::ostream&);
-template<> void solve<Day10>(bool, std::istream&, std::ostream&);
-template<> void solve<Day11>(bool, std::istream&, std::ostream&);
-template<> void solve<Day12>(bool, std::istream&, std::ostream&);
-template<> void solve<Day13>(bool, std::istream&, std::ostream&);
-template<> void solve<Day14>(bool, std::istream&, std::ostream&);
-template<> void solve<Day15>(bool, std::istream&, std::ostream&);
-template<> void solve<Day16>(bool, std::istream&, std::ostream&);
-template<> void solve<Day17>(bool, std::istream&, std::ostream&);
-template<> void solve<Day18>(bool, std::istream&, std::ostream&);
-template<> void solve<Day19>(bool, std::istream&, std::ostream&);
-template<> void solve<Day20>(bool, std::istream&, std::ostream&);
-template<> void solve<Day21>(bool, std::istream&, std::ostream&);
-template<> void solve<Day22>(bool, std::istream&, std::ostream&);
-template<> void solve<Day23>(bool, std::istream&, std::ostream&);
-template<> void solve<Day24>(bool, std::istream&, std::ostream&);
-template<> void solve<Day25>(bool, std::istream&, std::ostream&);
+#include "Solution.hpp"
+#include "timer.hpp"
+
+#include "Day01.hpp"
+#include "Day02.hpp"
+#include "Day03.hpp"
+#include "Day04.hpp"
+#include "Day05.hpp"
+#include "Day06.hpp"
+#include "Day07.hpp"
+#include "Day08.hpp"
+#include "Day09.hpp"
+#include "Day10.hpp"
+#include "Day11.hpp"
+#include "Day12.hpp"
+#include "Day13.hpp"
+#include "Day14.hpp"
+#include "Day15.hpp"
+#include "Day16.hpp"
+#include "Day17.hpp"
+#include "Day18.hpp"
+#include "Day19.hpp"
+#include "Day20.hpp"
+#include "Day21.hpp"
+#include "Day22.hpp"
+#include "Day23.hpp"
+#include "Day24.hpp"
+#include "Day25.hpp"
 
 enum time_options_t { NO_TIME = 0, TIME_IND = 1, TIME_TOTAL = 2 };
 
@@ -41,84 +43,72 @@ struct options_t {
   std::regex     filter{".*"};
 };
 
-template <Day>
-double
-timeSolve(bool, bool);
-
-double
-run(int, bool, time_options_t, std::ostream&);
-
 options_t
 parseArgs(int, char* []);
 
-std::string
-asString(int);
+template <typename, bool>
+double runInstance(bool, std::ostream&);
+
+template <typename>
+double runSingle(options_t const &, std::ostream&);
+
+template <int ... Days>
+double
+runAll(options_t const & options, std::ostream& os, std::integer_sequence<int, Days...>) {
+  return (... + runSingle<Day<Days>>(options, os));
+}
 
 int
 main(int argc, char* argv[])
 {
   std::ofstream DEVNULL{"/dev/null"};
   options_t     options = parseArgs(argc, argv);
-  double        totalTime{0.0};
   std::ostream  os{options.time == TIME_TOTAL ? DEVNULL.rdbuf() : std::cout.rdbuf()};
-  for (int day{1}; day <= 25; ++day) {
-    if (!std::regex_search(asString(day), options.filter))
-      continue;
-    os << asString(day) << ((options.part1 && options.part2) ? "\n" : ": ");
-    if (options.part1) {
-      if (options.part2)
-        os << "Part 1: ";
-      totalTime += run(day, false, options.time, os);
-    }
-    if (options.part2) {
-      if (options.part1)
-        os << "Part 2: ";
-      totalTime += run(day, true, options.time, os);
-    }
-  }
+  double totalTime = runAll(options, os, ListOfDays{});
   if (options.time == TIME_TOTAL)
     printf("  time: %.5lfms\n", totalTime);
   return EXIT_SUCCESS;
 }
 
-std::string
-asString(int day)
-{
-  return (std::ostringstream{} << "Day" << std::setfill('0') << std::setw(2) << day).str();
+template <typename DayToRun>
+double runSingle(options_t const & options, std::ostream& os) {
+  double totalTime {0.0};
+  if (!std::regex_search(DayToRun::text(), options.filter))
+    return totalTime;
+  os << DayToRun::text() << ((options.part1 && options.part2) ? "\n" : ": ");
+  if (options.part1) {
+    if (options.part2)
+      os << "Part 1: ";
+    totalTime += runInstance<DayToRun, false>(options.time, os);
+  }
+  if (options.part2) {
+    if (options.part1)
+      os << "Part 2: ";
+    totalTime += runInstance<DayToRun, true>(options.time, os);
+  }
+  return totalTime;
 }
 
-template <Day DAY>
+template <typename DayToRun, bool Part2>
 double
-timeSolve(bool part2, bool time, std::ostream& os)
+runInstance(bool time, std::ostream& os)
 {
-  double        resTime{0.0};
-  std::ifstream is{"./inputs/" + asString(DAY) + ".txt"};
+  std::ifstream is{"./inputs/" + DayToRun::text() + ".txt"};
   if (time) {
     Timer<> t;
-    solve<DAY>(part2, is, os);
-    resTime = t.current<std::milli>();
+    DayToRun::template solve<Part2>(is, os);
+    double resTime = t.current<std::milli>();
     os.precision(5);
     os << "  time: ";
     os.setf(std::ios::fixed, std::ios::floatfield);
     os << resTime << "ms" << std::endl;
-  } else
-    solve<DAY>(part2, is, os);
-  return resTime;
+    return resTime;
+  } else {
+    DayToRun::template solve<Part2>(is, os);
+    return 0.0;
+  }
 }
 
-double
-run(int day, bool part2, time_options_t time, std::ostream& os)
-{
-  using FnType = double(*)(bool, bool, std::ostream&);
-  static std::array<FnType, 26> const dispatch {{ nullptr,
-      &timeSolve<Day01>, &timeSolve<Day02>, &timeSolve<Day03>, &timeSolve<Day04>, &timeSolve<Day05>,
-      &timeSolve<Day06>, &timeSolve<Day07>, &timeSolve<Day08>, &timeSolve<Day09>, &timeSolve<Day10>,
-      &timeSolve<Day11>, &timeSolve<Day12>, &timeSolve<Day13>, &timeSolve<Day14>, &timeSolve<Day15>,
-      &timeSolve<Day16>, &timeSolve<Day17>, &timeSolve<Day18>, &timeSolve<Day19>, &timeSolve<Day20>,
-      &timeSolve<Day21>, &timeSolve<Day22>, &timeSolve<Day23>, &timeSolve<Day24>, &timeSolve<Day25>
-  }};
-  return dispatch[static_cast<unsigned int>(day)](part2, time, os);
-}
 
 options_t
 parseArgs(int argc, char* argv[])

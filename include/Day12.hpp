@@ -7,8 +7,9 @@
 static std::regex const NUM {R"(\d+)", std::regex::optimize};
 
 template <>
+template <bool part2>
 void
-solve<Day12>(bool part2, std::istream& is, std::ostream& os)
+Day<12>::solve(std::istream &is, std::ostream &os)
 {
   util::disjoint_set<int> set;
   for (std::string line; std::getline(is, line); ) {

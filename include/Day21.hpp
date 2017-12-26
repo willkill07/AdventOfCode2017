@@ -92,8 +92,9 @@ struct Grid {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day21>(bool part2, std::istream& is, std::ostream& os)
+Day<21>::solve(std::istream &is, std::ostream &os)
 {
   std::unordered_map<Grid, Grid, Grid::Hash> data;
   for (std::string line; std::getline(is, line); ) {

@@ -16,8 +16,9 @@ auto invalid (int delay = 0) {
 }
 
 template <>
+template <bool part2>
 void
-solve<Day13>(bool part2, std::istream& is, std::ostream& os)
+Day<13>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<Pair> scan;
   for (int layer, range; (is >> layer).ignore(1,':') >> range; )

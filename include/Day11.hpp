@@ -4,8 +4,10 @@
 #include <utility>
 
 template <>
+template <bool part2>
 void
-solve<Day11>(bool part2, std::istream& is, std::ostream& os) {
+Day<11>::solve(std::istream &is, std::ostream &os)
+{
   int x{0}, y{0}, z{0}, dist{0}, max{0};
   for (char c, v{0}; is >> c; ) {
     if (std::isalpha(c)) {

@@ -2,8 +2,9 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day01>(bool part2, std::istream& is, std::ostream& os)
+Day<1>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<char> const values(std::istream_iterator<char>{is}, {});
   std::size_t const N{values.size()};

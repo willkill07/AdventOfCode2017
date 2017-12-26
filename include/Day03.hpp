@@ -20,8 +20,10 @@ struct Point {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day03>(bool part2, std::istream& is, std::ostream& os) {
+Day<3>::solve(std::istream &is, std::ostream &os)
+{
   int num;
   is >> num;
   if (part2) {

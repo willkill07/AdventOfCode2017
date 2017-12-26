@@ -2,37 +2,18 @@
 #define WILLIAM_KILLIAN_SOLUTION_HPP_
 
 #include <iostream>
+#include <string>
 
-enum Day {
-  Day01 = 1,
-  Day02,
-  Day03,
-  Day04,
-  Day05,
-  Day06,
-  Day07,
-  Day08,
-  Day09,
-  Day10,
-  Day11,
-  Day12,
-  Day13,
-  Day14,
-  Day15,
-  Day16,
-  Day17,
-  Day18,
-  Day19,
-  Day20,
-  Day21,
-  Day22,
-  Day23,
-  Day24,
-  Day25
+template <int DayOfAdvent>
+struct Day {
+  static std::string text() {
+    return std::string{(DayOfAdvent < 10) ? "Day0" : "Day"} + std::to_string(DayOfAdvent);
+  }
+
+  template <bool Part2>
+  static void solve(std::istream&, std::ostream&);
 };
 
-template <Day DAY>
-void
-solve(bool, std::istream&, std::ostream&);
+using ListOfDays = std::integer_sequence<int, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25>;
 
 #endif

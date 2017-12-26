@@ -4,8 +4,9 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day19>(bool part2, std::istream& is, std::ostream& os)
+Day<19>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<std::string> grid;
   for (std::string line; std::getline(is, line); )

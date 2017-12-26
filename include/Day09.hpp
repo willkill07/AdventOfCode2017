@@ -5,8 +5,9 @@ enum State {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day09>(bool part2, std::istream& is, std::ostream& os)
+Day<9>::solve(std::istream &is, std::ostream &os)
 {
   State s{Default};
   int nest{0}, score{0}, gc{0};

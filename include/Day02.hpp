@@ -5,8 +5,9 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day02>(bool part2, std::istream& is, std::ostream& os)
+Day<2>::solve(std::istream &is, std::ostream &os)
 {
   int sum(0);
   for (std::string line; std::getline(is, line); ) {

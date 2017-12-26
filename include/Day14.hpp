@@ -15,8 +15,9 @@ struct PairHash {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day14>(bool part2, std::istream& is, std::ostream& os)
+Day<14>::solve(std::istream &is, std::ostream &os)
 {
   std::string input;
   is >> input;

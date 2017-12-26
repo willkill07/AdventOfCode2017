@@ -3,8 +3,9 @@
 #include "duet_asm.hpp"
 
 template <>
+template <bool part2>
 void
-solve<Day23>(bool part2, std::istream& is, std::ostream& os)
+Day<23>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<program::instr> instr {std::istream_iterator<program::instr>{is}, {}};
   if (part2) {

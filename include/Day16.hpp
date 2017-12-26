@@ -7,8 +7,9 @@
 #include <vector>
 
 template<>
+template <bool part2>
 void
-solve<Day16>(bool part2, std::istream& is, std::ostream& os)
+Day<16>::solve(std::istream &is, std::ostream &os)
 {
   std::string p(16, ' ');
   std::iota(std::begin(p), std::end(p), 'a');

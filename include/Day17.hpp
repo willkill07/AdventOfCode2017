@@ -3,8 +3,9 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day17>(bool part2, std::istream& is, std::ostream& os)
+Day<17>::solve(std::istream &is, std::ostream &os)
 {
   int incr;
   is >> incr;

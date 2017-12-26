@@ -4,8 +4,9 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day05>(bool part2, std::istream& is, std::ostream& os)
+Day<5>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<int> inst{std::istream_iterator<int>{is}, {}};
   int index{0}, n{static_cast<int>(inst.size())};

@@ -12,8 +12,9 @@ static Map<bool (*)(int, int)> const cmp{{OP(==), OP(!=), OP(<), OP(>), OP(<=), 
 static Map<int (*)(int&, int)> const apply{{MOD("inc", +=), MOD("dec", -=)}};
 
 template <>
+template <bool part2>
 void
-solve<Day08>(bool part2, std::istream& is, std::ostream& os)
+Day<8>::solve(std::istream &is, std::ostream &os)
 {
   Map<int> vals;
   std::string var1, inc_dec, var2, op;

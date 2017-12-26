@@ -39,8 +39,9 @@ Node* find_bad_node(Node* n);
 std::unordered_map<std::string, Node> parse (std::istream& is);
 
 template <>
+template <bool part2>
 void
-solve<Day07>(bool part2, std::istream& is, std::ostream& os)
+Day<7>::solve(std::istream &is, std::ostream &os)
 {
   auto nodes = parse(is);
   for(auto it = std::begin(nodes); it != std::end(nodes); ++it) {

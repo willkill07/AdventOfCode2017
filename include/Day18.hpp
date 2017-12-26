@@ -5,12 +5,13 @@
 #include <vector>
 
 template <>
+template <bool part2>
 void
-solve<Day18>(bool part2, std::istream& is, std::ostream& os)
+Day<18>::solve(std::istream &is, std::ostream &os)
 {
   std::vector<program::instr> inst{std::istream_iterator<program::instr>{is}, {}};
-  os << [part2, p0 = program{inst}, p1 = program{inst, 1}] () mutable {
-    if (part2) {
+  os << [p0 = program{inst}, p1 = program{inst, 1}] () mutable {
+    if constexpr (part2) {
       std::thread{&program::run, &p0, &p1}.detach();
       std::thread{&program::run, &p1, &p0}.detach();
       while (!p0.deadlock() || !p1.deadlock())

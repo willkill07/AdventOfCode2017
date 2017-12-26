@@ -19,8 +19,10 @@ struct csv : std::ctype<char> {
 };
 
 template <>
+template <bool part2>
 void
-solve<Day10>(bool part2, std::istream& is, std::ostream& os) {
+Day<10>::solve(std::istream &is, std::ostream &os)
+{
   std::vector<int> lengths;
   if (part2) {
     lengths.insert(lengths.end(), std::istream_iterator<char>{is}, {});
